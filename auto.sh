@@ -53,7 +53,7 @@ apt-get -y install nano iptables dnsutils openvpn screen whois ngrep unzip unrar
 echo "clear" >> .bashrc
 echo 'echo -e "Selamat datang di server $HOSTNAME" | lolcat' >> .bashrc
 echo 'echo -e "Script mod by PLaYBoYE"' >> .bashrc
-echo 'echo -e "Ketik menu untuk menampilkan daftar perintah"' >> .bashrc
+echo 'echo -e "Tulis menu untuk memaparkan arahan"' >> .bashrc
 echo 'echo -e ""' >> .bashrc
 
 # install webserver
@@ -229,7 +229,7 @@ echo "Modified by Bustami Arifin"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Log Instalasi --> /root/log-install.txt"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "VPS AUTO REBOOT TIAP JAM 12 MALAM"  | tee -a log-install.txt
+echo "VPS AUTO REBOOT SETIAP JAM 12 MALAM"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "==========================================="  | tee -a log-install.txt
 cd

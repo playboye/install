@@ -2,79 +2,12 @@
 #
 # ==================================================
 
-# initialisasi var
-export DEBIAN_FRONTEND=noninteractive
-OS=`uname -m`;
-MYIP=$(wget -qO- ipv4.icanhazip.com);
-MYIP2="s/xxxxxxxxx/$MYIP/g";
-
-#detail nama perusahaan
-country=MY
-state=Selangor
-locality=Klang
-organization=Warnet
-organizationalunit=IT
-commonname=playboye
-email=playboye91@gmail.com
-
 # go to root
 cd
 
 # disable ipv6
 echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6
 sed -i '$ i\echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6' /etc/rc.local
-
-# install wget and curl
-apt-get update;apt-get -y install wget curl;
-
-# set time GMT +7
-ln -fs /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
-
-# set locale
-sed -i 's/AcceptEnv/#AcceptEnv/g' /etc/ssh/sshd_config
-service ssh restart
-
-# set repo
-wget -O /etc/apt/sources.list "http://evira.us/sources.list.debian7"
-wget "http://www.dotdeb.org/dotdeb.gpg"
-cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
-sh -c 'echo "deb http://download.webmin.com/download/repository sarge contrib" > /etc/apt/sources.list.d/webmin.list'
-wget -qO - http://www.webmin.com/jcameron-key.asc | apt-key add -
-
-# update
-apt-get update
-
-# install webserver
-apt-get -y install nginx
-
-# install essential package
-apt-get -y install nano iptables dnsutils openvpn screen whois ngrep unzip unrar
-
-echo "clear" >> .bashrc
-echo 'echo -e "Selamat datang di server $HOSTNAME" | lolcat' >> .bashrc
-echo 'echo -e "Script mod by Bustami Arifin"' >> .bashrc
-echo 'echo -e "Ketik menu untuk menampilkan daftar perintah"' >> .bashrc
-echo 'echo -e ""' >> .bashrc
-
-# install webserver
-cd
-rm /etc/nginx/sites-enabled/default
-rm /etc/nginx/sites-available/default
-wget -O /etc/nginx/nginx.conf "http://evira.us/nginx.conf"
-mkdir -p /home/vps/public_html
-echo "<pre>Setup by Bustami Arifin</pre>" > /home/vps/public_html/index.html
-wget -O /etc/nginx/conf.d/vps.conf "http://evira.us/vps.conf"
-service nginx restart
-
-# install badvpn
-cd
-wget -O /usr/bin/badvpn-udpgw "http://evira.us/badvpn-udpgw"
-if [ "$OS" == "x86_64" ]; then
-  wget -O /usr/bin/badvpn-udpgw "http://evira.us/badvpn-udpgw64"
-fi
-sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/rc.local
-chmod +x /usr/bin/badvpn-udpgw
-screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
 
 # setting port ssh
 cd
@@ -91,6 +24,9 @@ echo "/bin/false" >> /etc/shells
 echo "/usr/sbin/nologin" >> /etc/shells
 service ssh restart
 service dropbear restart
+
+# install openvpn
+wget https://git.io/vpn -O openvpn-install.sh && bash openvpn-install.sh
 
 # install squid3
 cd
@@ -168,17 +104,6 @@ service webmin restart
 rm -rf ~/.bash_history && history -c
 echo "unset HISTFILE" >> /etc/profile
 
-# install neofetch
-echo "deb http://dl.bintray.com/dawidd6/neofetch jessie main" | tee -a /etc/apt/sources.list
-curl "https://bintray.com/user/downloadSubjectPublicKey?username=bintray"| apt-key add -
-apt-get update
-apt-get install neofetch
-
-echo "deb http://dl.bintray.com/dawidd6/neofetch jessie main" | tee -a /etc/apt/sources.list
-curl "https://bintray.com/user/downloadSubjectPublicKey?username=bintray"| apt-key add -
-apt-get update
-apt-get install neofetch
-
 # info
 clear
 echo "Autoscript Include:" | tee log-install.txt
@@ -210,8 +135,6 @@ echo "about (Informasi tentang script auto install)"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Fitur lain"  | tee -a log-install.txt
 echo "----------"  | tee -a log-install.txt
-echo "Webmin   : http://$MYIP:10000/"  | tee -a log-install.txt
-echo "Timezone : Asia/Jakarta (GMT +7)"  | tee -a log-install.txt
 echo "IPv6     : [off]"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Original Script by Fornesia, Rzengineer & Fawzya"  | tee -a log-install.txt

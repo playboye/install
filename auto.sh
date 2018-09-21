@@ -1,7 +1,39 @@
 #!/bin/bash
 #
+# Original script by fornesia, rzengineer and fawzya 
+# Mod by Clrkz for Adding OCS Panel
 # 
 # ==================================================
+
+MYIP=$(wget -qO- ipv4.icanhazip.com);
+: '
+# check registered ip
+wget -q -O daftarip http://188.166.215.119:85/ocs/ip.txt
+if ! grep -w -q $MYIP daftarip; then
+	echo "Sorry, only registered IPs can use this script!"
+	if [[ $vps = "vps" ]]; then
+		echo "Powered by Clrkz"
+	else
+		echo "Powered by Clrkz"
+	fi
+	rm -f /root/daftarip
+	exit
+fi
+'
+# initialisasi var
+export DEBIAN_FRONTEND=noninteractive
+OS=`uname -m`;
+MYIP=$(wget -qO- ipv4.icanhazip.com);
+MYIP2="s/xxxxxxxxx/$MYIP/g";
+
+#detail nama perusahaan
+country=MY
+state=Selangor
+locality=Klang
+organization=Netrwork
+organizationalunit=IT
+commonname=playboye.blogspot.com
+email=playboye91@gmail.com
 
 # go to root
 cd
@@ -19,6 +51,46 @@ ln -fs /usr/share/zoneinfo/Asia/Selangor /etc/localtime
 # set locale
 sed -i 's/AcceptEnv/#AcceptEnv/g' /etc/ssh/sshd_config
 service ssh restart
+
+# set repo
+wget -O /etc/apt/sources.list "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/sources.list.debian7"
+wget "http://www.dotdeb.org/dotdeb.gpg"
+cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
+sh -c 'echo "deb http://download.webmin.com/download/repository sarge contrib" > /etc/apt/sources.list.d/webmin.list'
+wget -qO - http://www.webmin.com/jcameron-key.asc | apt-key add -
+
+# update
+apt-get update
+
+# install webserver
+apt-get -y install nginx
+
+# install essential package
+apt-get -y install nano iptables dnsutils openvpn screen whois ngrep unzip unrar
+
+# install webserver
+cd
+rm /etc/nginx/sites-enabled/default
+rm /etc/nginx/sites-available/default
+wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/nginx.conf"
+mkdir -p /home/vps/public_html
+echo "<pre>Setup by Clrkz</pre>" > /home/vps/public_html/index.html
+wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/vps.conf"
+service nginx restart
+
+# install openvpn
+wget -O https://git.io/vpn -O openvpn-install.sh && bash openvpn-install.sh
+service openvpn restart
+
+# install badvpn
+cd
+wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/badvpn-udpgw"
+if [ "$OS" == "x86_64" ]; then
+  wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/badvpn-udpgw64"
+fi
+sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/rc.local
+chmod +x /usr/bin/badvpn-udpgw
+screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
 
 # setting port ssh
 cd
@@ -42,6 +114,12 @@ apt-get -y install squid3
 wget -O /etc/squid3/squid.conf "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/squid3.conf"
 sed -i $MYIP2 /etc/squid3/squid.conf;
 service squid3 restart
+
+# install webmin
+cd
+apt-get -y install webmin
+sed -i 's/ssl=1/ssl=0/g' /etc/webmin/miniserv.conf
+service webmin restart
 
 # install stunnel
 apt-get install stunnel4 -y
@@ -73,6 +151,9 @@ sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 apt-get -y install ruby
 gem install lolcat
 
+# install fail2banapt-get -y install fail2ban;
+service fail2ban restart 
+
 # install ddos deflate
 cd
 apt-get -y install dnsutils dsniff
@@ -88,6 +169,10 @@ sed -i 's@#Banner@Banner@g' /etc/ssh/sshd_config
 sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/issue.net"@g' /etc/default/dropbear
 service ssh restart
 service dropbear restart
+
+#xml parser
+cd
+apt-get -y --force-yes -f install libxml-parser-perl
 
 # download script
 cd /usr/bin
@@ -118,12 +203,26 @@ chmod +x about
 # finishing
 cd
 chown -R www-data:www-data /home/vps/public_html
+service nginx start
+service openvpn restart
 service cron restart
 service ssh restart
 service dropbear restart
 service squid3 restart
+service webmin restart
 rm -rf ~/.bash_history && history -c
 echo "unset HISTFILE" >> /etc/profile
+
+# install neofetch
+echo "deb http://dl.bintray.com/dawidd6/neofetch jessie main" | tee -a /etc/apt/sources.list
+curl "https://bintray.com/user/downloadSubjectPublicKey?username=bintray"| apt-key add -
+apt-get update
+apt-get install neofetch
+
+echo "deb http://dl.bintray.com/dawidd6/neofetch jessie main" | tee -a /etc/apt/sources.list
+curl "https://bintray.com/user/downloadSubjectPublicKey?username=bintray"| apt-key add -
+apt-get update
+apt-get install neofetch
 
 # info
 clear
@@ -156,8 +255,12 @@ echo "about (Information about auto install script)"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Other features"  | tee -a log-install.txt
 echo "----------"  | tee -a log-install.txt
+echo "Webmin   : http://$MYIP:10000/"  | tee -a log-install.txt
+echo "Timezone : Asia/Manila (GMT +7)"  | tee -a log-install.txt
 echo "IPv6     : [off]"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
+echo "Original Script by Fornesia, Rzengineer & Fawzya"  | tee -a log-install.txt
+echo "Modified by Clrkz"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Installation Log --> /root/log-install.txt"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt

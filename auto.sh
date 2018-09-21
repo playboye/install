@@ -1,25 +1,7 @@
 #!/bin/bash
 #
-# Original script by fornesia, rzengineer and fawzya 
-# Mod by Clrkz for Adding OCS Panel
-# 
 # ==================================================
 
-MYIP=$(wget -qO- ipv4.icanhazip.com);
-: '
-# check registered ip
-wget -q -O daftarip http://188.166.215.119:85/ocs/ip.txt
-if ! grep -w -q $MYIP daftarip; then
-	echo "Sorry, only registered IPs can use this script!"
-	if [[ $vps = "vps" ]]; then
-		echo "Powered by Clrkz"
-	else
-		echo "Powered by Clrkz"
-	fi
-	rm -f /root/daftarip
-	exit
-fi
-'
 # initialisasi var
 export DEBIAN_FRONTEND=noninteractive
 OS=`uname -m`;
@@ -27,13 +9,13 @@ MYIP=$(wget -qO- ipv4.icanhazip.com);
 MYIP2="s/xxxxxxxxx/$MYIP/g";
 
 #detail nama perusahaan
-country=ID
-state=Manila
-locality=Manila
-organization=ByteHAX
+country=MY
+state=Selangor
+locality=Klang
+organization=Warnet
 organizationalunit=IT
-commonname=bytehax.blogspot.com
-email=143Clarkz@gmail.com
+commonname=playboye
+email=playboye91@gmail.com
 
 # go to root
 cd
@@ -46,14 +28,14 @@ sed -i '$ i\echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6' /etc/rc.local
 apt-get update;apt-get -y install wget curl;
 
 # set time GMT +7
-ln -fs /usr/share/zoneinfo/Asia/Manila /etc/localtime
+ln -fs /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 
 # set locale
 sed -i 's/AcceptEnv/#AcceptEnv/g' /etc/ssh/sshd_config
 service ssh restart
 
 # set repo
-wget -O /etc/apt/sources.list "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/sources.list.debian7"
+wget -O /etc/apt/sources.list "http://evira.us/sources.list.debian7"
 wget "http://www.dotdeb.org/dotdeb.gpg"
 cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
 sh -c 'echo "deb http://download.webmin.com/download/repository sarge contrib" > /etc/apt/sources.list.d/webmin.list'
@@ -69,55 +51,26 @@ apt-get -y install nginx
 apt-get -y install nano iptables dnsutils openvpn screen whois ngrep unzip unrar
 
 echo "clear" >> .bashrc
-echo 'echo -e "      # ###       ###                  /"' >> .bashrc
-echo 'echo -e "    /  /###  /     ###               #/"' >> .bashrc
-echo 'echo -e "   /  /  ###/       ##               ##"' >> .bashrc
-echo 'echo -e "  /  ##   ##        ##               ##"' >> .bashrc
-echo 'echo -e " /  ###             ##               ##"' >> .bashrc
-echo 'echo -e "##   ##             ##  ###  /###    ##  /##   ######"' >> .bashrc
-echo 'echo -e "##   ##             ##   ###/ #### / ## / ### /#######"' >> .bashrc
-echo 'echo -e "##   ##             ##    ##   ###/  ##/   / /      ##"' >> .bashrc
-echo 'echo -e "##   ##             ##    ##         ##   /         /"' >> .bashrc
-echo 'echo -e "##   ##             ##    ##         ##  /         /"' >> .bashrc
-echo 'echo -e " ##  ##             ##    ##         ## ##        ###"' >> .bashrc
-echo 'echo -e "  ## #      /       ##    ##         ######        ###"' >> .bashrc
-echo 'echo -e "   ###     /        ##    ##         ##  ###        ###"' >> .bashrc
-echo 'echo -e "    ######/         ### / ###        ##   ### /      ##"' >> .bashrc
-echo 'echo -e "      ###            ##/   ###        ##   ##/       ##"' >> .bashrc
-echo 'echo -e "                                                     /"' >> .bashrc
-echo 'echo -e "                                                    /"' >> .bashrc
-echo 'echo -e "                                                   /"' >> .bashrc
-echo 'echo -e "                                                  /"' >> .bashrc
-echo 'echo -e "welcome to the server $HOSTNAME" | lolcat' >> .bashrc
-echo 'echo -e "Script mod by Clrkz"' >> .bashrc
-echo 'echo -e "Type menu to display a list of commands"' >> .bashrc
+echo 'echo -e "Selamat datang di server $HOSTNAME" | lolcat' >> .bashrc
+echo 'echo -e "Script mod by Bustami Arifin"' >> .bashrc
+echo 'echo -e "Ketik menu untuk menampilkan daftar perintah"' >> .bashrc
 echo 'echo -e ""' >> .bashrc
 
 # install webserver
 cd
 rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
-wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/nginx.conf"
+wget -O /etc/nginx/nginx.conf "http://evira.us/nginx.conf"
 mkdir -p /home/vps/public_html
-echo "<pre>Setup by Clrkz</pre>" > /home/vps/public_html/index.html
-wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/vps.conf"
+echo "<pre>Setup by Bustami Arifin</pre>" > /home/vps/public_html/index.html
+wget -O /etc/nginx/conf.d/vps.conf "http://evira.us/vps.conf"
 service nginx restart
-
-# install openvpn
-wget https://git.io/vpn -O openvpn-install.sh && bash openvpn-install.sh
-service openvpn restart
-
-# konfigurasi openvpn
-cd /etc/openvpn/
-wget -O /etc/openvpn/client.ovpn "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/client-1194.conf"
-sed -i $MYIP2 /etc/openvpn/client.ovpn;
-cp client.ovpn /home/vps/public_html/
 
 # install badvpn
 cd
-wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/badvpn-udpgw"
+wget -O /usr/bin/badvpn-udpgw "http://evira.us/badvpn-udpgw"
 if [ "$OS" == "x86_64" ]; then
-  wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/badvpn-udpgw64"
+  wget -O /usr/bin/badvpn-udpgw "http://evira.us/badvpn-udpgw64"
 fi
 sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/rc.local
 chmod +x /usr/bin/badvpn-udpgw
@@ -142,15 +95,9 @@ service dropbear restart
 # install squid3
 cd
 apt-get -y install squid3
-wget -O /etc/squid3/squid.conf "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/squid3.conf"
+wget -O /etc/squid3/squid.conf "http://evira.us/squid3.conf"
 sed -i $MYIP2 /etc/squid3/squid.conf;
 service squid3 restart
-
-# install webmin
-cd
-apt-get -y install webmin
-sed -i 's/ssl=1/ssl=0/g' /etc/webmin/miniserv.conf
-service webmin restart
 
 # install stunnel
 apt-get install stunnel4 -y
@@ -182,51 +129,28 @@ sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 apt-get -y install ruby
 gem install lolcat
 
-# install fail2banapt-get -y install fail2ban;
-service fail2ban restart 
-
-# install ddos deflate
-cd
-apt-get -y install dnsutils dsniff
-wget https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/ddos-deflate-master.zip 
-unzip ddos-deflate-master.zip
-cd ddos-deflate-master
-./install.sh
-rm -rf /root/ddos-deflate-master.zip 
-
-# bannerrm /etc/issue.net
-wget -O /etc/issue.net "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/issue.net"
-sed -i 's@#Banner@Banner@g' /etc/ssh/sshd_config
-sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/issue.net"@g' /etc/default/dropbear
-service ssh restart
-service dropbear restart
-
-#xml parser
-cd
-apt-get -y --force-yes -f install libxml-parser-perl
-
 # download script
 cd /usr/bin
-wget -O menu "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/menu.sh"
-wget -O usernew "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/usernew.sh"
-wget -O trial "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/trial.sh"
-wget -O delete "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/hapus.sh"
-wget -O check "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/user-login.sh"
-wget -O member "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/user-list.sh"
-wget -O restart "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/resvis.sh"
-wget -O speedtest "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/speedtest_cli.py"
-wget -O info "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/info.sh"
-wget -O about "https://raw.githubusercontent.com/Clrkz/VPSAutoScrptz/master/about.sh"
+wget -O menu "http://evira.us/menu.sh"
+wget -O usernew "http://evira.us/usernew.sh"
+wget -O trial "http://evira.us/trial.sh"
+wget -O hapus "http://evira.us/hapus.sh"
+wget -O cek "http://evira.us/user-login.sh"
+wget -O member "http://evira.us/user-list.sh"
+wget -O resvis "http://evira.us/resvis.sh"
+wget -O speedtest "http://evira.us/speedtest_cli.py"
+wget -O info "http://evira.us/info.sh"
+wget -O about "http://evira.us/about.sh"
 
 echo "0 0 * * * root /sbin/reboot" > /etc/cron.d/reboot
 
 chmod +x menu
 chmod +x usernew
 chmod +x trial
-chmod +x delete
-chmod +x check
+chmod +x hapus
+chmod +x cek
 chmod +x member
-chmod +x restart
+chmod +x resvis
 chmod +x speedtest
 chmod +x info
 chmod +x about
@@ -272,31 +196,31 @@ echo "nginx    : 81"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Script"  | tee -a log-install.txt
 echo "------"  | tee -a log-install.txt
-echo "menu (Displays a list of available commands)"  | tee -a log-install.txt
-echo "usernew (Creating an SSH Account)"  | tee -a log-install.txt
-echo "trial (Create a Trial Account)"  | tee -a log-install.txt
-echo "delete (Clearing SSH Account)"  | tee -a log-install.txt
-echo "check (Check User Login)"  | tee -a log-install.txt
-echo "member (Check Member SSH)"  | tee -a log-install.txt
-echo "restart (Restart Service dropbear, webmin, squid3, openvpn and ssh)"  | tee -a log-install.txt
+echo "menu (Menampilkan daftar perintah yang tersedia)"  | tee -a log-install.txt
+echo "usernew (Membuat Akun SSH)"  | tee -a log-install.txt
+echo "trial (Membuat Akun Trial)"  | tee -a log-install.txt
+echo "hapus (Menghapus Akun SSH)"  | tee -a log-install.txt
+echo "cek (Cek User Login)"  | tee -a log-install.txt
+echo "member (Cek Member SSH)"  | tee -a log-install.txt
+echo "resvis (Restart Service dropbear, webmin, squid3, openvpn dan ssh)"  | tee -a log-install.txt
 echo "reboot (Reboot VPS)"  | tee -a log-install.txt
 echo "speedtest (Speedtest VPS)"  | tee -a log-install.txt
-echo "info (System Information)"  | tee -a log-install.txt
-echo "about (Information about auto install script)"  | tee -a log-install.txt
+echo "info (Menampilkan Informasi Sistem)"  | tee -a log-install.txt
+echo "about (Informasi tentang script auto install)"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "Other features"  | tee -a log-install.txt
+echo "Fitur lain"  | tee -a log-install.txt
 echo "----------"  | tee -a log-install.txt
 echo "Webmin   : http://$MYIP:10000/"  | tee -a log-install.txt
-echo "Timezone : Asia/Manila (GMT +7)"  | tee -a log-install.txt
+echo "Timezone : Asia/Jakarta (GMT +7)"  | tee -a log-install.txt
 echo "IPv6     : [off]"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Original Script by Fornesia, Rzengineer & Fawzya"  | tee -a log-install.txt
-echo "Modified by Clrkz"  | tee -a log-install.txt
+echo "Modified by Bustami Arifin"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "Installation Log --> /root/log-install.txt"  | tee -a log-install.txt
+echo "Log Instalasi --> /root/log-install.txt"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "VPS AUTO REBOOT TIME HOURS 12 NIGHT"  | tee -a log-install.txt
+echo "VPS AUTO REBOOT TIAP JAM 12 MALAM"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "==========================================="  | tee -a log-install.txt
 cd
-rm -f /root/debian7.sh
+rm -f /root/auto.sh
